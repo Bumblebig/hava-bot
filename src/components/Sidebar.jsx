@@ -8,7 +8,7 @@ const Sidebar = () => {
           <img src={docgif} alt="" />
         </div>
         <div className="buttons">
-          <button>Back to Hava</button>
+          <button><a href="https://havvadiagnosis.vercel.app" className="hava">Back to Hava</a></button>
           <button>Chat History</button>
           <button>Log Out</button>
         </div>
