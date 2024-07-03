@@ -92,6 +92,7 @@ button:hover a.hava:visited {
 .container {
   display: flex;
   align-items: flex-start;
+  position: relative;
 }
 
 .chat-section {
@@ -179,4 +180,43 @@ form {
   font-size: 10px;
   position: relative;
   bottom: -8px;
+}
+
+/* MENU */
+.menu {
+  display: none;
+}
+
+@media only screen and (max-width: 890px) {
+  .sidebar {
+    display: none;
+  }
+
+  .chat-section {
+    padding-top: 80px;
+    padding-right: 30px;
+    padding-left: 30px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .menu {
+    display: block;
+    width: 100%;
+    height: 70px;
+    background-color: white;
+    box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.149);
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    padding: 20px 0px 0px 30px;
+    color: #538c61;
+  }
+
+  .menu p {
+    border: 1px solid #538c61;
+    width: fit-content;
+    padding: 2px 5px;
+  }
 }
