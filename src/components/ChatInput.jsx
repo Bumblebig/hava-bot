@@ -1,110 +1,55 @@
-import React, { useState } from 'react';
-import { ChatBox } from './index'
+import React, { useState, useEffect } from 'react';
+import { db, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from '../../firebase';
+import ChatBox from './ChatBox';
+import { getSessionId } from '../utilis';
 
 const ChatInput = () => {
   const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([]);
+  const sessionId = getSessionId();
+
+  useEffect(() => {
+    const q = query(collection(db, 'messages'), orderBy('timestamp'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const messages = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setMessages(messages);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const handleChange = (e) => {
     setMessage(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (message.trim()) {
-      console.log(message)
+      await addDoc(collection(db, 'messages'), {
+        message,
+        sessionId,
+        timestamp: serverTimestamp()
+      });
       setMessage('');
     }
   };
 
   return (
     <div className='chat-section'>
-
       <section>
         <div className="chat-block">
-          <ChatBox
-            id="1"
-            status="receive"
-            message="Lorem ipsum"
-          />
-          <ChatBox
-            id="2"
-            status="send"
-            message="Lorem ipsum dolor sit amet consectetur adipisicing elit. Temporibus, ad excepturi vero esse obcaecati itaque? Qui recusandae optio quod incidunt cum corporis neque nulla amet excepturi eligendi. Fuga, facilis atque?"
-          />
-          <ChatBox
-            id="1"
-            status="receive"
-            message="Lorem ipsum"
-          />
-          <ChatBox
-            id="2"
-            status="send"
-            message="Lorem ipsum dolor sit amet consectetur adipisicing elit. Temporibus, ad excepturi vero esse obcaecati itaque? Qui recusandae optio quod incidunt cum corporis neque nulla amet excepturi eligendi. Fuga, facilis atque?"
-          />
-          <ChatBox
-            id="1"
-            status="receive"
-            message="Lorem ipsum"
-          />
-          <ChatBox
-            id="2"
-            status="send"
-            message="Lorem ipsum dolor sit amet consectetur adipisicing elit. Temporibus, ad excepturi vero esse obcaecati itaque? Qui recusandae optio quod incidunt cum corporis neque nulla amet excepturi eligendi. Fuga, facilis atque?"
-          />
-          <ChatBox
-            id="1"
-            status="receive"
-            message="Lorem ipsum"
-          />
-          <ChatBox
-            id="2"
-            status="send"
-            message="Lorem ipsum dolor sit amet consectetur adipisicing elit. Temporibus, ad excepturi vero esse obcaecati itaque? Qui recusandae optio quod incidunt cum corporis neque nulla amet excepturi eligendi. Fuga, facilis atque?"
-          />
-          <ChatBox
-            id="1"
-            status="receive"
-            message="Lorem ipsum"
-          />
-          <ChatBox
-            id="2"
-            status="send"
-            message="Lorem ipsum dolor sit amet consectetur adipisicing elit. Temporibus, ad excepturi vero esse obcaecati itaque? Qui recusandae optio quod incidunt cum corporis neque nulla amet excepturi eligendi. Fuga, facilis atque?"
-          />
-          <ChatBox
-            id="1"
-            status="receive"
-            message="Lorem ipsum"
-          />
-          <ChatBox
-            id="2"
-            status="send"
-            message="Lorem ipsum dolor sit amet consectetur adipisicing elit. Temporibus, ad excepturi vero esse obcaecati itaque? Qui recusandae optio quod incidunt cum corporis neque nulla amet excepturi eligendi. Fuga, facilis atque?"
-          />
-          <ChatBox
-            id="1"
-            status="receive"
-            message="Lorem ipsum"
-          />
-          <ChatBox
-            id="2"
-            status="send"
-            message="Lorem ipsum dolor sit amet consectetur adipisicing elit. Temporibus, ad excepturi vero esse obcaecati itaque? Qui recusandae optio quod incidunt cum corporis neque nulla amet excepturi eligendi. Fuga, facilis atque?"
-          />
-          <ChatBox
-            id="2"
-            status="send"
-            message="Lorem ipsum dolor sit amet consectetur adipisicing elit. Temporibus, ad excepturi vero esse obcaecati "
-          />
-          <ChatBox
-            id="2"
-            status="receive"
-            message="Lorem ipsum dolor sit amet consectetur adipisicing elit. Temporibus, ad excepturi vero esse obcaecati itaque? Qui recusandae optio quod incidunt cum corporis neque nulla amet excepturi eligendi. Fuga, facilis atque?"
-          />
-        </div >
-      </section >
-      {/* FORM */}
-      <form form onSubmit={handleSubmit} className="chat-input-form" >
+          {messages.map(msg => (
+            <ChatBox
+              key={msg.id}
+              status={msg.sessionId === sessionId ? 'send' : 'receive'}
+              message={msg.message}
+            />
+          ))}
+        </div>
+      </section>
+      <form onSubmit={handleSubmit} className="chat-input-form">
         <input
           type="text"
           value={message}
@@ -115,8 +60,8 @@ const ChatInput = () => {
         <button type="submit" className="send-button">
           Send
         </button>
-      </form >
-    </div >
+      </form>
+    </div>
   );
 };
 
