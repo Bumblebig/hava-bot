@@ -7,7 +7,7 @@ export default function Menu() {
     }
     return (
         <section className="menu">
-            <p onCLick={modal}>Menu</p>
+            <p onClick={modal}>Menu</p>
         </section>
     )
 }
